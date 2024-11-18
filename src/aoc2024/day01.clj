@@ -1,5 +1,3 @@
-(ns aoc2024.day01
-  (:require [clojure.string :as s]))
+(ns aoc2024.day01)
 
-(defn part1 [input] :todo)
-(defn part2 [input] :todo)
+(defn solve [input] [])
