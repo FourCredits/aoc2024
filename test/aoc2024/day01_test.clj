@@ -1,7 +1,7 @@
 (ns aoc2024.day01-test
   (:require [clojure.test :refer [deftest is run-tests testing]]
             [clojure.java.io :as io]
-            [aoc2023.day01 :refer [part1]]))
+            [aoc2024.day01 :refer [part1]]))
 
 (deftest part1-tests
   (testing "example data"

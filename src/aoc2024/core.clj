@@ -2,7 +2,7 @@
   (:gen-class)
   (:require [clojure.java.io :as io]
             [clojure.pprint :as pp]
-            [aoc2023.day01 :as d01]))
+            [aoc2024.day01 :as d01]))
 
 (def days {1 d01/solve})
 
