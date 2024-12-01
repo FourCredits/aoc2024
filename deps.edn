@@ -1,7 +1,8 @@
 {:paths ["src" "resources"]
  :deps {org.clojure/clojure {:mvn/version "1.12.0"}}
  :aliases
- {:repl {:extra-deps
+ {:run {:main-opts ["--main" "aoc2024.core"]}
+  :repl {:extra-deps
          {nrepl/nrepl {:mvn/version "1.0.0"}
           cider/cider-nrepl {:mvn/version "0.42.1"}}
          :main-opts ["--main" "nrepl.cmdline"
