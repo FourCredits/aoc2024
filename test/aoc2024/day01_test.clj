@@ -1,29 +1,23 @@
 (ns aoc2024.day01-test
-  (:require [clojure.test :refer [deftest is run-tests testing]]
-            [clojure.java.io :as io]
-            [aoc2024.day01 :refer [part1 part2 parse]]))
+  (:require
+   [aoc2024.day01 :refer [parse part1 part2]]
+   [clojure.java.io :as io]
+   [clojure.test :refer [deftest is testing]]))
 
-(def ^:private example
-  "3   4
+(deftest ^:example example
+  (let [input "3   4
 4   3
 2   5
 1   3
 3   9
-3   3")
+3   3"
+        parsed (parse input)]
+    (testing "example input"
+      (is (= (part1 parsed) 11))
+      (is (= (part2 parsed) 31)))))
 
-(def ^:private real-input (slurp (io/resource "day01.txt")))
-
-(deftest part1-tests
-  (testing "example data"
-    (is (= (part1 (parse example)) 11)))
+(deftest ^:real real
   (testing "real input"
-    (is (= (part1 (parse real-input)) 2192892))))
-
-(deftest part2-tests
-  (testing "example data"
-    (is (= (part2 (parse example)) 31)))
-  (testing "real input"
-    (is (= (part2 (parse real-input)) 22962826))))
-
-(comment
-  (run-tests))
+    (let [parsed (parse (slurp (io/resource "day01.txt")))]
+      (is (= (part1 parsed) 2192892))
+      (is (= (part2 parsed) 22962826)))))
