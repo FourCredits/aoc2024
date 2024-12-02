@@ -5,27 +5,21 @@
 (defn parse [input]
   (->> input str/split-lines (map #(map parse-long (str/split % #" ")))))
 
-(comment
-  (let [input
-        "7 6 4 2 1
-1 2 7 8 9
-9 7 6 2 1
-1 3 2 4 5
-8 6 4 4 1
-1 3 6 7 9"
-        parsed (parse input)]
-    [(part1 parsed)])
-  (partition 2 1 (range 1 10)))
+(defn- small-jump? [[a b]] (<= 1 (abs (- a b)) 3))
 
-(defn safe? [report]
+(defn- safe? [report]
   (and (or (apply < report) (apply > report))
-       (->> report
-            (partition 2 1)
-            (remove (fn [[a b]] (<= 1 (abs (- a b)) 3)))
-            empty?)))
+       (every? small-jump? (partition 2 1 report))))
 
-(defn part1 [reports] (->> reports (filter safe?) count))
+(defn part1 [reports] (count (filter safe? reports)))
 
-(defn solve [input]
-  (let [parsed (parse input)]
-    [(part1 parsed)]))
+(defn- variations-with-one-missing [report]
+  (for [i (range (count report))]
+    (concat (take i report) (drop (inc i) report))))
+
+(defn- safe-with-dampener? [report]
+  (some safe? (cons report (variations-with-one-missing report))))
+
+(defn part2 [reports] (count (filter safe-with-dampener? reports)))
+
+(defn solve [input] ((juxt part1 part2) (parse input)))
