@@ -13,16 +13,13 @@
 (def ^:private down-left  (comp down left))
 (def ^:private down-right (comp down right))
 
-(def ^:private directions
-  [up down right left up-left up-right down-left down-right])
-
 (defn part1 [input]
   (let [crossword (str/split-lines input)]
     (count
      (for [[row-pos row] (zipmap (range) crossword)
            [col-pos letter] (zipmap (range) row)
            :when (= letter \X)
-           direction directions
+           direction [up down right left up-left up-right down-left down-right]
            :when (->> [row-pos col-pos]
                       (iterate direction)
                       (take 4)
@@ -30,6 +27,23 @@
                       (= [\X \M \A \S]))]
        :found-you))))
 
-(defn part2 [input] :todo)
+(def ^:private crosses
+  [(juxt up-left down-right up-right down-left)
+   (juxt up-left down-right down-left up-right)
+   (juxt down-right up-left up-right down-left)
+   (juxt down-right up-left down-left up-right)])
+
+(defn part2 [input]
+  (let [crossword (str/split-lines input)]
+    (count
+     (for [[row-pos row] (zipmap (range) crossword)
+           [col-pos letter] (zipmap (range) row)
+           :when (= letter \A)
+           cross crosses
+           :when (->> [row-pos col-pos]
+                      cross
+                      (map #(get-in crossword %))
+                      (= [\M \S \M \S]))]
+       :found-you))))
 
 (defn solve [input] ((juxt part1 part2) input))
