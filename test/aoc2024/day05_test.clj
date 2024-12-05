@@ -7,12 +7,11 @@
 (deftest ^:example example
   (let [example-input (file-inputs/example-file 5)]
     (testing "example input"
-      (is (= (part1 example-input) 143)))))
+      (is (= (part1 example-input) 143))
+      (is (= (part2 example-input) 123)))))
 
 (deftest ^:real real
   (let [real-input (file-inputs/real-file 5)]
     (testing "real input"
-      (is (= (part1 real-input) 5275)))))
-
-(comment
-  (clojure.test/run-tests))
+      (is (= (part1 real-input) 5275))
+      (is (= (part2 real-input) 6191)))))
