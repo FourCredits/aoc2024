@@ -15,6 +15,3 @@
     (testing "real input"
       (is (= (part1 real-input) 2557))
       (is (= (part2 real-input) 1854)))))
-
-(comment
-  (clojure.test/run-tests))

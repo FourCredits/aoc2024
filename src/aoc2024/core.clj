@@ -5,6 +5,7 @@
    [aoc2024.day02 :as d02]
    [aoc2024.day03 :as d03]
    [aoc2024.day04 :as d04]
+   [aoc2024.day05 :as d05]
    [clojure.java.io :as io]
    [clojure.pprint :as pp]))
 
@@ -12,7 +13,8 @@
   {1 d01/solve
    2 d02/solve
    3 d03/solve
-   4 d04/solve})
+   4 d04/solve
+   5 d05/solve})
 
 (defn perform-day [day]
   (let [input (slurp (io/resource (format "day%02d.txt" day)))
