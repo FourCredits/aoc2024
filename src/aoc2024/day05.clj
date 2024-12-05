@@ -5,9 +5,13 @@
 (defn- middle [coll] (nth coll (quot (count coll) 2)))
 
 (defn- ordered-correctly? [rules page-numbers]
-  (if-let [[f & r] (seq page-numbers)]
-    (and (not (some (get rules f #{}) r)) (recur rules r))
-    true))
+  (every? (fn [[f & r]] (not-any? (get rules f #{}) r))
+          (reductions (fn [x _] (rest x)) page-numbers page-numbers)))
+
+(defn- sum-of-middles [coll] (transduce (map middle) + coll))
+
+(defn part1 [{:keys [rules updates]}]
+  (sum-of-middles (filter #(ordered-correctly? rules %) updates)))
 
 (defn- sort-by-rules
   "topological sort of `page-numbers` according to `rules`."
@@ -25,30 +29,16 @@
         (recur result' (into completed no-deps) deps)
         result'))))
 
-(defn part1 [input]
-  (let [[rules-part updates-part] (str/split input #"\n\n")
-        rules (->> rules-part
-                   str/split-lines
-                   (map #(map parse-long (str/split % #"\|")))
-                   (group-by second)
-                   (#(update-vals % (comp set (partial map first)))))
-        parse-updates (fn [line] (map parse-long (str/split line #",")))
-        updates (->> updates-part str/split-lines (map parse-updates))
-        ordered-correctly? (partial ordered-correctly? rules)]
-    (->> updates (filter ordered-correctly?) (map middle) (apply +))))
+(defn part2 [{:keys [rules updates]}]
+  (let [ordered-incorrectly? #(not (ordered-correctly? rules %))
+        sort-by-rules #(sort-by-rules rules %)]
+    (sum-of-middles (map sort-by-rules (filter ordered-incorrectly? updates)))))
 
-(defn part2 [input]
-  (let [[rules-part updates-part] (str/split input #"\n\n")
-        rules (->> rules-part
-                   str/split-lines
-                   (map #(map parse-long (str/split % #"\|")))
-                   (group-by second)
-                   (#(update-vals % (comp set (partial map first)))))
-        parse-updates (fn [line] (map parse-long (str/split line #",")))
-        updates (->> updates-part str/split-lines (map parse-updates))]
-    (->> updates
-         (filter #(not (ordered-correctly? rules %)))
-         (map #(middle (sort-by-rules rules %)))
-         (apply +))))
+(defn parse [input]
+  (let [[rules updates] (map str/split-lines (str/split input #"\n\n"))
+        mk-graph (fn [[b a]] {a #{b}})
+        mk-dependency #(->> (str/split % #"\|") (map parse-long) mk-graph)]
+    {:rules (->> rules (map mk-dependency) (apply merge-with into))
+     :updates (map #(map parse-long (str/split % #",")) updates)}))
 
-(defn solve [input] ((juxt part1 part2) input))
+(defn solve [input] ((juxt part1 part2) (parse input)))
