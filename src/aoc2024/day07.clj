@@ -21,8 +21,8 @@
 
 (defn find-total-calibration-value [operations equations]
   (->> equations
-       (keep (fn [[target rhs]]
-               (some #{target} (options operations target rhs))))
+       (pmap (fn [[target rhs]]
+               (or (some #{target} (options operations target rhs)) 0)))
        (apply +)))
 
 (defn part1 [equations] (find-total-calibration-value [+ *] equations))
