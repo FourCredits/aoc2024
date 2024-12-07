@@ -1,39 +1,35 @@
 (ns aoc2024.day07
   (:require
-   [aoc2024.file-inputs :as file-inputs]
    [clojure.string :as str]))
 
 (defn parse [input]
   (->> input
        str/split-lines
        (map #(let [[target rhs] (str/split % #": ")]
-               {:target (parse-long target)
-                :rhs (map parse-long (str/split rhs #" "))}))))
+               [(parse-long target) (map parse-long (str/split rhs #" "))]))))
 
-(defn- options [numbers]
-  (if (= 1 (count numbers))
-    numbers
-    (let [[f & r] (seq numbers)
-          r-options (options r)]
-      (concat (map #(* f %) r-options) (map #(+ f %) r-options)))))
-
-(defn- options2 [numbers]
-  (condp #(= %1 (count %2)) numbers
-    0 []
-    1 numbers
-    (for [operation [+ * (fn [x y] (parse-long (str x y)))]
-          :let [[a b & c] numbers]
-          option (options2 (cons (operation a b) c))]
+(defn- options [operations target numbers]
+  (case (count numbers)
+    (0 1) numbers
+    (for [operation operations
+          :let [[a b & c] numbers
+                result (operation a b)]
+          ;; further processing cannot make the value smaller; so if the running
+          ;; value is larger than the target, we don't need to keep going
+          :when (<= result target)
+          option (options operations target (cons result c))]
       option)))
 
-(defn part1 [equations]
+(defn find-total-calibration-value [operations equations]
   (->> equations
-       (keep (fn [{:keys [target rhs]}] (->> rhs reverse options (some #{target}))))
+       (keep (fn [[target rhs]]
+               (some #{target} (options operations target rhs))))
        (apply +)))
 
-(defn part2 [equations]
-  (->> equations
-       (keep (fn [{:keys [target rhs]}] (some #{target} (options2 rhs))))
-       (apply +)))
+(defn part1 [equations] (find-total-calibration-value [+ *] equations))
+
+(def ^:private catenate (comp parse-long str))
+
+(defn part2 [equations] (find-total-calibration-value [+ * catenate] equations))
 
 (defn solve [input] ((juxt part1 part2) input))
