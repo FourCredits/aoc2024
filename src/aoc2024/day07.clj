@@ -3,10 +3,9 @@
    [clojure.string :as str]))
 
 (defn parse [input]
-  (->> input
-       str/split-lines
-       (map #(let [[target rhs] (str/split % #": ")]
-               [(parse-long target) (map parse-long (str/split rhs #" "))]))))
+  (for [line (str/split-lines input)
+        :let [[target rhs] (str/split line #": ")]]
+    [(parse-long target) (map parse-long (str/split rhs #" "))]))
 
 (defn- options [operations target numbers]
   (case (count numbers)
