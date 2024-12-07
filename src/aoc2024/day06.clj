@@ -2,6 +2,14 @@
   (:require [aoc2024.two-d :as two-d]
             [clojure.string :as str]))
 
+(defn parse [input]
+  (let [grid (two-d/grid-seq (str/split-lines input))
+        by-type (update-vals (group-by second grid) #(map first %))
+        [[max-r max-c] _] (last grid)]
+    {:in-bounds? (fn [[r c]] (and (<= 0 r max-r) (<= 0 c max-c)))
+     :obstacles (set (by-type \#))
+     :start (first (by-type \^))}))
+
 ;; TODO: move to two-d
 (defn- turn-right [direction]
   (condp = direction
@@ -22,24 +30,13 @@
                            (recur pos dir' (conj visited [pos dir'])))
         :else (recur pos' dir (conj visited [pos' dir]))))))
 
-(defn part1 [input]
-  (let [grid (two-d/grid-seq (str/split-lines input))
-        by-type (update-vals (group-by second grid) #(map first %))
-        [[max-r max-c] _] (last grid)
-        obstacles (set (by-type \#))
-        in-bounds? (fn [[r c]] (and (<= 0 r max-r) (<= 0 c max-c)))]
-    (count (simulate-guard obstacles (first (by-type \^)) in-bounds?))))
+(defn part1 [{:keys [in-bounds? obstacles start]}]
+  (count (simulate-guard obstacles start in-bounds?)))
 
-(defn part2 [input]
-  (let [grid (two-d/grid-seq (str/split-lines input))
-        by-type (update-vals (group-by second grid) #(map first %))
-        [[max-r max-c] _] (last grid)
-        obstacles (set (by-type \#))
-        in-bounds? (fn [[r c]] (and (<= 0 r max-r) (<= 0 c max-c)))
-        start (first (by-type \^))
-        unobstructed-path (simulate-guard obstacles start in-bounds?)]
+(defn part2 [{:keys [in-bounds? obstacles start]}]
+  (let [unobstructed-path (simulate-guard obstacles start in-bounds?)]
     (->> (disj unobstructed-path start)
          (filter #(= :loop (simulate-guard (conj obstacles %) start in-bounds?)))
          count)))
 
-(defn solve [input] ((juxt part1 part2) input))
+(defn solve [input] ((juxt part1 part2) (parse input)))

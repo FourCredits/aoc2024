@@ -5,16 +5,17 @@
    [clojure.test :refer [deftest is testing]]))
 
 (deftest ^:example example
-  (let [example-input (file-inputs/example-file 6)]
+  (let [example-input (parse (file-inputs/example-file 6))]
     (testing "example input"
       (is (= (part1 example-input) 41))
       (is (= (part2 example-input) 6)))))
 
 (deftest ^:real real
-  (let [real-input (file-inputs/real-file 6)]
+  (let [real-input (parse (file-inputs/real-file 6))]
     (testing "real input"
       (is (= (part1 real-input) 4826))
       (is (= (part2 real-input) 1721)))))
 
 (comment
+  (time (part2 (file-inputs/real-file 6)))
   (clojure.test/run-tests))
