@@ -17,5 +17,5 @@
       (is (= (part2 real-input) 1721)))))
 
 (comment
-  (time (part2 (file-inputs/real-file 6)))
+  (time (part2 (parse (file-inputs/real-file 6))))
   (clojure.test/run-tests))
