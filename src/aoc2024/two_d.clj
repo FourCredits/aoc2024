@@ -23,6 +23,17 @@
         [c-index value] (map vector (range) row)]
     [[r-index c-index] value]))
 
+(defn inside [[[min-r min-c] [max-r max-c]] [r c]]
+  (and (<= min-r r max-r) (<= min-c c max-c)))
+
+(defn on-grid? [grid pos] (inside [[0 0] (first (last grid))] pos))
+
+(defn group-positions-by-value
+  "given a grid (as returned by `grid-seq`), returns a map of value => positions
+  that have that value"
+  [grid]
+  (update-vals (group-by second grid) #(mapv first %)))
+
 (defn distance-between [[r1 c1] [r2 c2]] [(- r2 r1) (- c2 c1)])
 
 (defn scale [n [r c]] [(* r n) (* c n)])

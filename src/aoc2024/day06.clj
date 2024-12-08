@@ -4,9 +4,8 @@
 
 (defn parse [input]
   (let [grid (two-d/grid-seq (str/split-lines input))
-        by-type (update-vals (group-by second grid) #(map first %))
-        [[max-r max-c] _] (last grid)]
-    {:in-bounds? (fn [[r c]] (and (<= 0 r max-r) (<= 0 c max-c)))
+        by-type (two-d/group-positions-by-value grid)]
+    {:in-bounds? (partial two-d/on-grid? grid)
      :obstacles (set (by-type \#))
      :start (first (by-type \^))}))
 

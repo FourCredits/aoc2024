@@ -4,12 +4,9 @@
    [clojure.string :as str]))
 
 (defn parse [input]
-  (let [grid (two-d/grid-seq (str/split-lines input))
-        [[max-r max-c] _] (last grid)
-        on-map? (fn [[r c]] (and (<= 0 r max-r) (<= 0 c max-c)))
-        grouping (group-by second (remove #(= \. (second %)) grid))
-        by-frequency (->> grouping vals (map #(mapv first %)))]
-    {:by-frequency by-frequency :on-map? on-map?}))
+  (let [grid (two-d/grid-seq (str/split-lines input))]
+    {:by-frequency (vals (dissoc (two-d/group-positions-by-value grid) \.))
+     :on-map? #(two-d/on-grid? grid %)}))
 
 (defn all-pairs-no-swaps [coll]
   (for [i (range (count coll))
