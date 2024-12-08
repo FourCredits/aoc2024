@@ -3,6 +3,14 @@
    [aoc2024.two-d :as two-d]
    [clojure.string :as str]))
 
+(defn parse [input]
+  (let [grid (two-d/grid-seq (str/split-lines input))
+        [[max-r max-c] _] (last grid)
+        on-map? (fn [[r c]] (and (<= 0 r max-r) (<= 0 c max-c)))
+        grouping (group-by second (remove #(= \. (second %)) grid))
+        by-frequency (->> grouping vals (map #(mapv first %)))]
+    {:by-frequency by-frequency :on-map? on-map?}))
+
 (defn all-pairs-no-swaps [coll]
   (for [i (range (count coll))
         j (range (inc i) (count coll))]
@@ -16,19 +24,10 @@
            [(+ r1 (* 2 r-diff)) (+ c1 (* 2 c-diff))]]]
     n))
 
-(defn part1 [input]
-  (let [grid (two-d/grid-seq (str/split-lines input))
-        [[max-r max-c] _] (last grid)
-        on-map? (fn [[r c]] (and (<= 0 r max-r) (<= 0 c max-c)))
-        grouping (group-by second (remove #(= \. (second %)) grid))
-        by-frequency (-> grouping (update-vals #(mapv first %)))]
-    (->> by-frequency
-         (mapcat (comp antinodes second))
-         (filter on-map?)
-         distinct
-         count)))
+(defn part1 [{:keys [by-frequency on-map?]}]
+  (->> by-frequency (mapcat antinodes) (filter on-map?) distinct count))
 
-(defn part2 [input]
+(defn part2 [{:keys [by-frequency on-map?]}]
   :todo)
 
-(defn solve [input] ((juxt part1 part2) input))
+(defn solve [input] ((juxt part1 part2) (parse input)))
