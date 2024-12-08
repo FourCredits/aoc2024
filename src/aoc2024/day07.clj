@@ -4,31 +4,26 @@
 
 (defn parse [input]
   (for [line (str/split-lines input)
-        :let [[target rhs] (str/split line #": ")]]
-    [(parse-long target) (map parse-long (str/split rhs #" "))]))
+        :let [[target numbers] (str/split line #": ")]]
+    [(parse-long target) (map parse-long (str/split numbers #" "))]))
 
-(defn- options [operations target numbers]
+(defn- evaluate [operations target [a b & c :as numbers]]
   (case (count numbers)
-    (0 1) numbers
-    (for [operation operations
-          :let [[a b & c] numbers
-                result (operation a b)]
-          ;; further processing cannot make the value smaller; so if the running
-          ;; value is larger than the target, we don't need to keep going
-          :when (<= result target)
-          option (options operations target (cons result c))]
-      option)))
+    0 false
+    1 (= a target)
+    (some (fn [operation]
+            (let [r (operation a b)]
+              (and (<= r target) (evaluate operations target (cons r c)))))
+          operations)))
 
-(defn find-total-calibration-value [operations equations]
-  (->> equations
-       (pmap (fn [[target rhs]]
-               (or (some #{target} (options operations target rhs)) 0)))
-       (apply +)))
-
-(defn part1 [equations] (find-total-calibration-value [+ *] equations))
+(defn- find-total-calibration-value [equations operations]
+  (apply + (pmap (fn [[target numbers]]
+                   (if (evaluate operations target numbers) target 0))
+                 equations)))
 
 (def ^:private catenate (comp parse-long str))
 
-(defn part2 [equations] (find-total-calibration-value [+ * catenate] equations))
+(defn part1 [equations] (find-total-calibration-value equations [+ *]))
+(defn part2 [equations] (find-total-calibration-value equations [+ * catenate]))
 
 (defn solve [input] ((juxt part1 part2) input))
