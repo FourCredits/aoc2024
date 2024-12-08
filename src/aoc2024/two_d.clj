@@ -23,3 +23,9 @@
         [c-index value] (map vector (range) row)]
     [[r-index c-index] value]))
 
+(defn distance-between [[r1 c1] [r2 c2]] [(- r2 r1) (- c2 c1)])
+
+(defn scale [n [r c]] [(* r n) (* c n)])
+
+(defn add-vectors [[r1 c1] [r2 c2]] [(+ r1 r2) (+ c1 c2)])
+
