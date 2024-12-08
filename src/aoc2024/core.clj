@@ -8,6 +8,7 @@
    [aoc2024.day05 :as d05]
    [aoc2024.day06 :as d06]
    [aoc2024.day07 :as d07]
+   [aoc2024.day08 :as d08]
    [clojure.java.io :as io]
    [clojure.pprint :as pp]))
 
@@ -19,6 +20,7 @@
    5 d05/solve
    6 d06/solve
    7 d07/solve
+   8 d08/solve
    ;
    })
 
