@@ -1,9 +1,7 @@
 (ns aoc2024.day09
   (:require
-   [aoc2024.file-inputs :as file-inputs]
+   [aoc2024.parsing :refer [char->int]]
    [clojure.string :as str]))
-
-(defn- char->int [element] (- (int element) (int \0)))
 
 (defn- id [index] (when (even? index) (quot index 2)))
 

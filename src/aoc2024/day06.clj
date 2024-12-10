@@ -3,7 +3,7 @@
             [clojure.string :as str]))
 
 (defn parse [input]
-  (let [grid (two-d/grid-seq (str/split-lines input))
+  (let [grid (two-d/grid (str/split-lines input))
         by-type (two-d/group-positions-by-value grid)]
     {:in-bounds? (partial two-d/on-grid? grid)
      :obstacles (set (by-type \#))

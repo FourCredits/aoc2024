@@ -4,7 +4,7 @@
    [clojure.string :as str]))
 
 (defn parse [input]
-  (let [grid (two-d/grid-seq (str/split-lines input))]
+  (let [grid (two-d/grid (str/split-lines input))]
     {:by-frequency (vals (dissoc (two-d/group-positions-by-value grid) \.))
      :on-map? #(two-d/on-grid? grid %)}))
 

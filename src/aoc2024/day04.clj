@@ -5,7 +5,7 @@
 
 (defn parse [input]
   (let [c (str/split-lines input)
-        grid (two-d/grid-seq c)]
+        grid (two-d/grid c)]
     [#(keep (fn [[p l]] (when (= l %) p)) grid) (partial map #(get-in c %))]))
 
 (defn cartesian-product [f coll1 coll2] (for [x coll1, y coll2] (f x y)))

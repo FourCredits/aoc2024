@@ -10,18 +10,30 @@
 (def down-left  (comp down left))
 (def down-right (comp down right))
 
+(def taxicab-directions
+  "The set of steps that, according to the
+  [taxicab distance](https://en.wikipedia.org/wiki/Taxicab_geometry), are one
+  away from the starting point"
+  [up down left right])
+
 (def chebyshev-directions
   "The set of steps that, according to the
-  [chebyshev distance](https://en.wikipedia.org/wiki/Chebyshev_distance), are
+  [Chebyshev distance](https://en.wikipedia.org/wiki/Chebyshev_distance), are
   one away from the starting point"
   [up-left up up-right left right down-left down down-right])
 
 (def diagonal-directions [up-left up-right down-left down-right])
 
-(defn grid-seq [input]
-  (for [[r-index row] (map vector (range) input)
-        [c-index value] (map vector (range) row)]
-    [[r-index c-index] value]))
+(defn grid
+  "Given a collection of collections, gives row and column indexes to each
+  value, flattening the result. Given no arguments, returns a stateful
+  transducer."
+  ([]
+   (comp (map-indexed (fn [r row] (map-indexed (fn [c v] [[r c] v]) row))) cat))
+  ([input]
+   (for [[r-index row] (map vector (range) input)
+         [c-index value] (map vector (range) row)]
+     [[r-index c-index] value])))
 
 (defn inside [[[min-r min-c] [max-r max-c]] [r c]]
   (and (<= min-r r max-r) (<= min-c c max-c)))
@@ -29,7 +41,7 @@
 (defn on-grid? [grid pos] (inside [[0 0] (first (last grid))] pos))
 
 (defn group-positions-by-value
-  "given a grid (as returned by `grid-seq`), returns a map of value => positions
+  "Given a grid (as returned by `grid`), returns a map of value => positions
   that have that value"
   [grid]
   (update-vals (group-by second grid) #(mapv first %)))
