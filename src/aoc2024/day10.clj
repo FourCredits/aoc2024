@@ -4,10 +4,12 @@
    [aoc2024.two-d :as two-d]
    [clojure.string :as str]))
 
-(defn part1 [input]
-  (let [update-value #(update % 1 char->int)
-        grid (into {} (comp two-d/grid (map update-value)) (str/split-lines input))
-        next-directions (fn [p] (map (fn [dir] (dir p)) two-d/taxicab-directions))
+(defn parse [input]
+  (let [update-value #(update % 1 char->int)]
+    (into {} (comp (two-d/grid) (map update-value)) (str/split-lines input))))
+
+(defn part1 [grid]
+  (let [next-directions (fn [p] (map (fn [dir] (dir p)) two-d/taxicab-directions))
         next-step-up (fn [height points]
                        (->> points
                             (mapcat next-directions)
@@ -21,7 +23,7 @@
                         (map score-trailhead))]
     (transduce score-all + grid)))
 
-(defn part2 [input]
+(defn part2 [grid]
   :todo)
 
-(defn solve [input] ((juxt part1 part2) input))
+(defn solve [input] ((juxt part1 part2) (parse input)))
