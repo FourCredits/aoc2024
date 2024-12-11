@@ -15,7 +15,7 @@
   (some #(% stone) [#(when (= % 0) [1]) split-in-two #(vector (* % 2024))]))
 
 (defn- tick-same-number-stones [[stone amount]]
-  (-> stone tick-stone frequencies (update-vals #(* % amount))))
+  (update-vals (frequencies (tick-stone stone)) #(* % amount)))
 
 (defn- tick [stones]
   (transduce (map tick-same-number-stones) (partial merge-with +) stones))
