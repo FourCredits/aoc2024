@@ -11,25 +11,19 @@
       (let [n (int (math/pow 10 (/ num-digits 2)))]
         [(quot stone n) (mod stone n)]))))
 
-(defn- update-stone [stone]
+(defn- tick-stone [stone]
   (some #(% stone) [#(when (= % 0) [1]) split-in-two #(vector (* % 2024))]))
 
-(defn- new-function [{:keys [cache stones]} [stone amount]]
-  (let [cached (get cache stone)
-        updates (or cached (update-stone stone))
-        new-stones (update-vals (frequencies updates) #(* % amount))]
-    {:cache (if (some? cached) cache (assoc cache stone updates))
-     :stones (merge-with + stones new-stones)}))
+(defn- tick-same-number-stones [[stone amount]]
+  (-> stone tick-stone frequencies (update-vals #(* % amount))))
 
-(defn- step [{:keys [cache stones]}]
-  (reduce new-function {:cache cache :stones {}} stones))
+(defn- tick [stones]
+  (transduce (map tick-same-number-stones) (partial merge-with +) stones))
 
-(defn- count-stones-2 [blinks stones]
-  (let [state {:cache {} :stones (zipmap stones (repeat 1))}]
-    (apply + (vals (:stones (nth (iterate step state) blinks))))))
+(defn- count-stones [blinks stones]
+  (apply + (vals (nth (iterate tick (frequencies stones)) blinks))))
 
-(defn part1 [stones] (count-stones-2 25 stones))
-
-(defn part2 [stones] (count-stones-2 75 stones))
+(defn part1 [stones] (count-stones 25 stones))
+(defn part2 [stones] (count-stones 75 stones))
 
 (defn solve [input] ((juxt part1 part2) (parse input)))
