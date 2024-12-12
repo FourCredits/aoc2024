@@ -13,6 +13,8 @@
                        count)]
     (* area perimeter)))
 
+;; TODO: possible optimisation: find area and perimeter at the same time as
+;; doing the flood-fill
 (defn- flood-fill [grid plant from]
   (loop [region #{}
          new-elements #{from}]
@@ -30,7 +32,7 @@
     (if-let [[[pos plant] & _] (seq remaining)]
       (let [region (flood-fill grid plant pos)]
         (recur (conj results region)
-               (into {} (remove (comp region key) remaining))))
+               (apply dissoc remaining region)))
       results)))
 
 (defn part1 [input]
