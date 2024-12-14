@@ -14,6 +14,7 @@
    [aoc2024.day11 :as d11]
    [aoc2024.day12 :as d12]
    [aoc2024.day13 :as d13]
+   [aoc2024.day14 :as d14]
    [clojure.java.io :as io]
    [clojure.pprint :as pp]))
 
@@ -31,6 +32,7 @@
    11 d11/solve
    12 d12/solve
    13 d13/solve
+   14 d14/solve
    ;
    })
 
