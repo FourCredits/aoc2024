@@ -14,10 +14,4 @@
   (let [input (file-inputs/real-file 9)]
     (testing "real input"
       (is (= (part1 input) 6367087064415))
-      #_(let [result (part2 input)]
-          (is (= result :todo))
-          (is (< result 8560280238594) "already guessed - it's too high!")))))
-
-(comment
-  (part2 (file-inputs/real-file 9)) ; 8560280238594
-  (clojure.test/run-tests))
+      (is (= (part2 input) 6390781891880)))))
