@@ -2,24 +2,19 @@
   (:require
    [clojure.string :as str]))
 
-(defn part1 [input]
-  (->> (str/split input #"\n\n")
-       (map #(let [[ax ay bx by tx ty] (map parse-long (re-seq #"\d+" %))
-                   a (/ (- (* ty bx) (* by tx))
-                        (- (* ay bx) (* by ax)))
-                   b (/ (- tx (* ax a)) bx)]
-               (if (integer? a) (+ (* 3 a) b) 0)))
-       (apply +)))
+(defn parse [input]
+  (map #(map parse-long (re-seq #"\d+" %)) (str/split input #"\n\n")))
 
-(defn part2 [input]
-  (->> (str/split input #"\n\n")
-       (map #(let [[ax ay bx by tx ty] (map parse-long (re-seq #"\d+" %))
-                   tx (+ tx 10000000000000)
-                   ty (+ ty 10000000000000)
-                   a (/ (- (* ty bx) (* by tx))
-                        (- (* ay bx) (* by ax)))
-                   b (/ (- tx (* ax a)) bx)]
-               (if (and (integer? a) (integer? b)) (+ (* 3 a) b) 0)))
-       (apply +)))
+(defn- cost-to-win [[ax ay bx by tx ty]]
+  (let [a (/ (- (* ty bx) (* by tx))
+             (- (* ay bx) (* by ax)))
+        b (/ (- tx (* ax a)) bx)]
+    (if (and (integer? a) (integer? b)) (+ (* 3 a) b) 0)))
 
-(defn solve [input] ((juxt part1 part2) input))
+(defn- adjust [[ax ay bx by tx ty]]
+  [ax ay bx by (+ tx 10000000000000) (+ ty 10000000000000)])
+
+(defn part1 [machines] (transduce (map cost-to-win) + machines))
+(defn part2 [machines] (transduce (map (comp cost-to-win adjust)) + machines))
+
+(defn solve [input] ((juxt part1 part2) (parse input)))
