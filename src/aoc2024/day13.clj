@@ -19,7 +19,7 @@
                    a (/ (- (* ty bx) (* by tx))
                         (- (* ay bx) (* by ax)))
                    b (/ (- tx (* ax a)) bx)]
-               (if (integer? a) (+ (* 3 a) b) 0)))
+               (if (and (integer? a) (integer? b)) (+ (* 3 a) b) 0)))
        (apply +)))
 
 (defn solve [input] ((juxt part1 part2) input))
