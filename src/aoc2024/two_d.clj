@@ -52,3 +52,15 @@
 
 (defn add-vectors [[r1 c1] [r2 c2]] [(+ r1 r2) (+ c1 c2)])
 
+(def anticlockwise
+  {up left
+   left down
+   down right
+   right up})
+
+(def clockwise
+  {up right
+   right down
+   down left
+   left up})
+
