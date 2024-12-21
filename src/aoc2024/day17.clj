@@ -48,11 +48,46 @@
 (defn part1 [computer] (str/join \, (run-and-get-output computer)))
 
 (comment
-  (bit-xor 3 5))
+  (time
+   (let [{:keys [program b c] :as computer} (parse (file-inputs/real-file 17))]
+     (let [constraint (fn [a]
+                        (mod (bit-xor (mod a 8)
+                                      3
+                                      5
+                                      (quot a
+                                            (bit-shift-left 1 (bit-xor (mod a 8) 3))))
+                             8))]
+       (loop [[target & target-output] (reverse program)
+              as [0]]
+         (if target
+           (recur target-output
+                  (sequence (comp (mapcat #(range (* 8 %) (* 8 (inc %))))
+                                  (filter #(= (constraint %) target)))
+                            as))
+           (reduce min as)))))))
 
-(defn part2 [computer]
+(defn part2-example
+  "Not fast enough for the real thing - but hypothetically correct"
+  [computer]
   (->> (range)
        (filter #(= (run-and-get-output (assoc computer :a %)) (:program computer)))
        first))
 
-(defn solve [input] ((juxt part1 part2) (parse input)))
+(defn part2-real [{:keys [program]}]
+  (let [constraint (fn [a]
+                     (mod (bit-xor (mod a 8)
+                                   3
+                                   5
+                                   (quot a
+                                         (bit-shift-left 1 (bit-xor (mod a 8) 3))))
+                          8))]
+    (loop [[target & target-output] (reverse program)
+           as [0]]
+      (if target
+        (recur target-output
+               (sequence (comp (mapcat #(range (* 8 %) (* 8 (inc %))))
+                               (filter #(= (constraint %) target)))
+                         as))
+        (reduce min as)))))
+
+(defn solve [input] ((juxt part1 part2-real) (parse input)))
