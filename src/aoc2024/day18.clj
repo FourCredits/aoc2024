@@ -2,16 +2,14 @@
   (:require
    [aoc2024.two-d :as two-d]))
 
+(defn parse [input]
+  (let [xf (comp (map parse-long) (partition-all 2) (map vec))]
+    (sequence xf (re-seq #"\d+" input))))
+
 (defn part1
-  ([input] (part1 [70 70] 1024 input))
-  ([end fallen input]
-   (let [obstacles (->> input
-                        (re-seq #"\d+")
-                        (map parse-long)
-                        (partition-all 2)
-                        (map vec)
-                        (take fallen)
-                        set)
+  ([falling-bytes] (part1 [70 70] 1024 falling-bytes))
+  ([end fallen falling-bytes]
+   (let [obstacles (into #{} (take fallen) falling-bytes)
          legal? (fn [p] (and (two-d/inside [[0 0] end] p) (not (obstacles p))))
          best (fn [current new] (if (and current (<= current new)) current new))
          next-options (fn [p steps]
@@ -32,4 +30,4 @@
 (defn part2 [input]
   :todo)
 
-(defn solve [input] ((juxt part1 part2) input))
+(defn solve [input] ((juxt part1 part2) (parse input)))
