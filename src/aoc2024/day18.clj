@@ -1,6 +1,7 @@
 (ns aoc2024.day18
   (:require
-   [aoc2024.two-d :as two-d]))
+   [aoc2024.two-d :as two-d]
+   [clojure.string :as str]))
 
 (defn parse [input]
   (let [xf (comp (map parse-long) (partition-all 2) (map vec))]
@@ -27,7 +28,27 @@
                       (assoc cache p steps)
                       best-result))))))
 
-(defn part2 [input]
-  :todo)
+(def ^:private spread-out (apply juxt two-d/taxicab-directions))
+
+(defn- flood-fill [illegal? & starts]
+  (loop [seen #{}, wavefront starts]
+    (let [seen (into seen wavefront)]
+      (if (seq wavefront)
+        (recur seen (->> wavefront
+                         (mapcat spread-out)
+                         (remove (some-fn seen illegal?))
+                         distinct))
+        seen))))
+
+(defn part2
+  ([falling-bytes] (part2 [70 70] falling-bytes))
+  ([end falling-bytes]
+   (let [add-obstacle (fn [[obstacles _] b] [(conj obstacles b) b])
+         out-of-bounds? (fn [pos] (not (two-d/inside [[0 0] end] pos)))
+         illegal? (fn [obstacles] (some-fn obstacles out-of-bounds?))
+         path-to-end? (fn [obstacles] (some #{[0 0]} (flood-fill (illegal? obstacles) end)))
+         [[_ result]] (->> (reductions add-obstacle [#{} nil] falling-bytes)
+                           (remove (comp path-to-end? first)))]
+     (str/join \, result))))
 
 (defn solve [input] ((juxt part1 part2) (parse input)))
