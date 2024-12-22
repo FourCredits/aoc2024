@@ -12,17 +12,14 @@
 
 (def ^:private make-designs
   (letfn [(foo [towels design]
-            (if (.isEmpty design)
-              1
-              (transduce (comp
-                          (filter #(str/starts-with? design %))
-                          (map #(make-designs towels (strip-prefix design %))))
-                         +
-                         towels)))]
+            (let [xf (comp
+                      (filter #(str/starts-with? design %))
+                      (map #(make-designs towels (strip-prefix design %))))]
+              (if (.isEmpty design) 1 (transduce xf + towels))))]
     (memoize foo)))
 
 (defn part1 [{:keys [towels designs]}]
-  (count (filter pos? (map #(make-designs towels %) designs))))
+  (->> designs (map #(make-designs towels %)) (filter pos?) count))
 
 (defn part2 [{:keys [towels designs]}]
   (transduce (map #(make-designs towels %)) + designs))
