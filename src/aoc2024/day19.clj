@@ -10,22 +10,21 @@
 
 (defn- strip-prefix [s prefix] (subs s (count prefix)))
 
-(declare memoized)
-(defn- make-design2 [towels design]
-  (if (.isEmpty design)
-    1
-    (transduce (comp
-                (filter #(str/starts-with? design %))
-                (map #(memoized towels (strip-prefix design %))))
-               +
-               towels)))
-
-(def ^:private memoized (memoize make-design2))
+(def ^:private make-designs
+  (letfn [(foo [towels design]
+            (if (.isEmpty design)
+              1
+              (transduce (comp
+                          (filter #(str/starts-with? design %))
+                          (map #(make-designs towels (strip-prefix design %))))
+                         +
+                         towels)))]
+    (memoize foo)))
 
 (defn part1 [{:keys [towels designs]}]
-  (count (filter pos? (map #(memoized towels %) designs))))
+  (count (filter pos? (map #(make-designs towels %) designs))))
 
-(defn part2 [input]
-  :todo)
+(defn part2 [{:keys [towels designs]}]
+  (transduce (map #(make-designs towels %)) + designs))
 
 (defn solve [input] ((juxt part1 part2) (parse input)))

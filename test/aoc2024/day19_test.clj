@@ -7,9 +7,11 @@
 (deftest ^:example example
   (testing "example input"
     (let [input (parse (file-inputs/example-file 19))]
-      (is (= (part1 input) 6)))))
+      (is (= (part1 input) 6))
+      (is (= (part2 input) 16)))))
 
 (deftest ^:real real
   (testing "real input"
     (let [input (parse (file-inputs/real-file 19))]
-      (is (= (part1 input) 363)))))
+      (is (= (part1 input) 363))
+      (is (= (part2 input) 642535800868438)))))
